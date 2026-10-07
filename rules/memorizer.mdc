@@ -50,9 +50,15 @@ Al guardar SOLO puedes:
 - choque con fila `active`: pregunta antes. Si sí: `status` de la vieja → `superseded` en su archivo y en su línea del índice; escribe la fila nueva con `supersedes`
 - primera vez: las rutas y ignores de arriba
 
-Si no choca: entrada + una línea al índice + al usuario:
+Si no choca: entrada + una línea al índice.
 
-`Memoria guardada: <title>`
+Sobre esa escritura, al usuario UNA sola línea, sin título ni explicación. Varias filas en el mismo turno: igual una línea.
+
+- fila nueva: `Memoria guardada.`
+- reemplazo confirmado: `Memoria actualizada.`
+- fila quitada: `Memoria eliminada.`
+
+No listes títulos, paths, tags, lo omitido, gitignore ni cursorignore. El resto de la respuesta puede seguir con la tarea.
 
 Cualquier chat puede escribir, incluido un subagente. El subagente informa al orquestador `path` + `summary`.
 

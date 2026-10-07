@@ -42,7 +42,7 @@ Después de copiar, recarga la ventana de Cursor (`Developer: Reload Window`).
 
     El agente lo guarda y responde con una sola línea:
 
-    `Memoria guardada: CLI con Bun`
+    `Memoria guardada.`
 
 2.  **Consulta un hecho:** Más tarde, haz una pregunta que dependa de ese hecho. El agente buscará en el archivo `.memory/index.jsonl` del proyecto. No carga toda la memoria en el prompt, solo busca los índices.
 
