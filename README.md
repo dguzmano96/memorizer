@@ -42,9 +42,10 @@ Al instalar el plugin, un hook oficial de Cursor (`workspaceOpen` y `sessionStar
 
     *Ejemplo de lo que escribes:* «En este proyecto el CLI se corre con Bun, no con Node. El lockfile que manda es bun.lock.»
 
-    El agente lo guarda y responde con una sola línea:
+    El agente guarda primero, luego responde tu pregunta y, sobre el guardado, dice solo:
 
     `Memoria guardada.`
+
 
 2.  **Consulta un hecho:** Más tarde, haz una pregunta que dependa de ese hecho. El agente buscará en el archivo `.memory/index.jsonl` del proyecto. No carga toda la memoria en el prompt, solo busca los índices.
 

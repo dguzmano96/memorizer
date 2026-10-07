@@ -5,83 +5,45 @@ alwaysApply: true
 
 # Memorizer
 
-Solo el workspace abierto. El almacén es SOLO `.memory/` de ese workspace (`index.jsonl` + `entries/`). Nunca trates el nombre del plugin `memorizer`, `rules/memorizer.mdc` ni el README como base de datos. Buscar ahí no sustituye un grep de `.memory/index.jsonl`. No global. No compartir en equipo. No tocar reglas Scrum ni scrum-dev-agents.
+## Orden
 
-No leas `MEMORY.md` cada turno (es para humanos). Grep el índice; no lo inyectes. Sin tope de tamaño.
+1. Si el usuario dijo un hecho duradero que NO está ya en git/código/README: ANTES de responder, crea `.memory/entries/<timestamp>-<desc>-<5 tags>.md` con el frontmatter fijo y añade UNA línea JSON a `.memory/index.jsonl`. Crea `.memory/MEMORY.md`, `.memory/index.jsonl` y `.memory/entries/` solo si faltan.
+2. Luego responde la pregunta del usuario.
+3. Sobre la escritura, exactamente una línea y nada más: `Memoria guardada.` (nueva), `Memoria actualizada.` (reemplazo confirmado), `Memoria eliminada.` (quitada). Varias filas en el mismo turno: igual una línea. Sin títulos, paths, tags, gitignore ni cursorignore.
 
-La visibilidad de `.memory/` (Git no lo sube; el agente sí lo lee) la asegura un hook del plugin (`.cursorignore` + `.gitignore`). No uses Write de `.cursorignore` como camino principal.
+## Almacén
 
-## Alcance de escritura
-
-El agente puede crear o editar SOLO:
-
-- archivos bajo `.memory/`
-- como fallback si el hook no corrió: una línea `.memory/` en el `.gitignore` del workspace y `!.memory/` + `!.memory/**` en el `.cursorignore` del workspace (añadir líneas que falten; no reescribir el archivo; no narrarlo)
-
-## Estructura intocable
-
-No crear otras carpetas. No renombrar. No mover.
-
-- `.memory/MEMORY.md` — ficha humana; se crea una vez; no se reescribe en cada guardado
-- `.memory/index.jsonl` — solo líneas JSON, una por fila
-- `.memory/entries/<timestamp>-<desc>-<tag>-<tag>-<tag>-<tag>-<tag>.md`
-
-Los 5 tags del nombre son exactamente los 5 `tags` del frontmatter, mismo orden, una palabra cada uno.
-
-## Primera vez (filas de memoria; no es opcional)
-
-Crea `.memory/MEMORY.md`, `.memory/index.jsonl` y `.memory/entries/` si faltan. Si falta `index.jsonl`, créalo y guarda. No omitas el guardado porque grep no encontró nada.
-
-Si `.cursorignore` / `.gitignore` aún no tienen las líneas de visibilidad (el hook no corrió), añádelas como fallback. No narres gitignore ni cursorignore.
+El almacén es `.memory/` del workspace abierto. No trates el nombre del plugin, el README ni `rules/memorizer.mdc` como base de datos. Grep `index.jsonl`; no lo inyectes. Si falta el índice, créalo y guarda; no omitas el guardado porque grep no encontró nada.
 
 ## Buscar
 
-1. Grep `index.jsonl` por los 5 `tags` y `status` `active`.
-2. Si hay filas: abre esos `path`.
-3. Si cero activas: Grep `lowtags`. Relacionado, no exacto. Abre el archivo solo si `summary` encaja. No mezcles lowtags si ya hubo hits de tags.
+Grep `index.jsonl` por 5 `tags` y `status` `active`. Si cero hits: `lowtags` (relacionado; abre el archivo solo si `summary` encaja).
 
-## Guardar (hecho duradero)
+## Choque
 
-Escribe solo si no se deriva de git/código, no es log de chat, no es plan de tarea, no es secreto (solo nombres de env).
+Si choca con una fila `active`: pregunta antes. Si sí: `status` de la vieja → `superseded` en su archivo y en su línea del índice; fila nueva con `supersedes`.
 
-Al guardar SOLO puedes:
+## Ignores
 
-- crear un archivo nuevo en `entries/` con la plantilla fija
-- añadir UNA línea al final de `index.jsonl`
-- choque con fila `active`: pregunta antes. Si sí: `status` de la vieja → `superseded` en su archivo y en su línea del índice; escribe la fila nueva con `supersedes`
-- primera vez: las rutas de memoria de arriba (y el fallback de ignores si hace falta)
+Los ignores los posee el hook del plugin. No los narres. No rechaces guardar porque fallaron.
 
-Si no choca: entrada + una línea al índice.
+## Campos
 
-Sobre esa escritura, al usuario UNA sola línea, sin título ni explicación. Varias filas en el mismo turno: igual una línea.
-
-- fila nueva: `Memoria guardada.`
-- reemplazo confirmado: `Memoria actualizada.`
-- fila quitada: `Memoria eliminada.`
-
-No listes títulos, paths, tags, lo omitido, gitignore ni cursorignore. El resto de la respuesta puede seguir con la tarea.
-
-Cualquier chat puede escribir, incluido un subagente. El subagente informa al orquestador `path` + `summary`.
-
-Si pasaría de ~500 tokens (cuerpo ~400): parte en otra fila.
-
-## Prohibido (aunque parezca útil)
-
-- crear o editar reglas (`rules/`, `.cursor/rules/`, cualquier `*.mdc` fuera de `.memory/`)
-- editar README, plugin.json, marketplace.json, AGENTS.md o código del plugin
-- inventar, borrar o renombrar campos; meter `description` en el índice
-- reescribir `index.jsonl` entero, ordenarlo, pretty-print, o más de un JSON por línea
-- borrar entries, vaciar la carpeta, compactar o limpiar (esos comandos aún no existen)
-- guardar el hecho como regla alwaysApply
-- tags del nombre distintos de los 5 `tags` del frontmatter (mismo orden)
-
-## Campos fijos (no improvisar)
-
-Frontmatter: `created`, `updated` (ISO-8601 UTC), `title`, `type` (`user` | `feedback` | `project` | `reference`), `tags` (5), `lowtags` (3, más amplios), `status` (`active` | `superseded` | `archived`), `summary` (una frase), `supersedes` opcional (path relativo de la fila que reemplaza).
+Frontmatter: `created`, `updated`, `title`, `type` (`user`|`feedback`|`project`|`reference`), `tags` (exactamente 5, una palabra, mismo orden que el nombre del archivo), `lowtags` (exactamente 3), `status` (`active`|`superseded`|`archived`), `summary` (una frase), `supersedes` opcional. Cuerpo: sección `description`.
 
 Índice (una JSON por línea): `path`, `tags`, `lowtags`, `type`, `status`, `updated`, `summary`. Nunca `description`.
 
-Cuerpo: sección `description` (hecho, cuándo aplica, excepción, cómo comprobar).
+## No guardar
+
+Secretos (solo nombres de env), logs de chat, planes de tarea de un solo uso, ni hechos ya en el repo.
+
+## Prohibido
+
+No crear `rules/*.mdc` ni `.cursor/rules`. No editar README, plugin.json, marketplace.json, AGENTS.md. No reescribir el índice entero. No borrar entries. No carpetas extra. No compactar/limpiar.
+
+## Subagente
+
+Puede escribir. Debe informar al orquestador `path` + `summary`.
 
 ## Ejemplo
 
