@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "hooks": {
+    "workspaceOpen": [
+      {
+        "command": "node ./scripts/ensure-memory-visibility.js"
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "node ./scripts/ensure-memory-visibility.js"
+      }
+    ]
+  }
+}

@@ -5,17 +5,18 @@ alwaysApply: true
 
 # Memorizer
 
-Solo el workspace abierto. Carpeta `.memory/`. No global. No compartir en equipo. No tocar reglas Scrum ni scrum-dev-agents.
+Solo el workspace abierto. El almacén es SOLO `.memory/` de ese workspace (`index.jsonl` + `entries/`). Nunca trates el nombre del plugin `memorizer`, `rules/memorizer.mdc` ni el README como base de datos. Buscar ahí no sustituye un grep de `.memory/index.jsonl`. No global. No compartir en equipo. No tocar reglas Scrum ni scrum-dev-agents.
 
 No leas `MEMORY.md` cada turno (es para humanos). Grep el índice; no lo inyectes. Sin tope de tamaño.
+
+La visibilidad de `.memory/` (Git no lo sube; el agente sí lo lee) la asegura un hook del plugin (`.cursorignore` + `.gitignore`). No uses Write de `.cursorignore` como camino principal.
 
 ## Alcance de escritura
 
 El agente puede crear o editar SOLO:
 
 - archivos bajo `.memory/`
-- una línea `.memory/` en el `.gitignore` del workspace
-- la excepción `!.memory/` y `!.memory/**` en el `.cursorignore` del workspace
+- como fallback si el hook no corrió: una línea `.memory/` en el `.gitignore` del workspace y `!.memory/` + `!.memory/**` en el `.cursorignore` del workspace (añadir líneas que falten; no reescribir el archivo; no narrarlo)
 
 ## Estructura intocable
 
@@ -27,11 +28,11 @@ No crear otras carpetas. No renombrar. No mover.
 
 Los 5 tags del nombre son exactamente los 5 `tags` del frontmatter, mismo orden, una palabra cada uno.
 
-## Primera vez (si falta algo; no es opcional)
+## Primera vez (filas de memoria; no es opcional)
 
-- esas tres rutas (entries/, index.jsonl vacío ok, MEMORY.md una vez)
-- `.gitignore`: línea `.memory/`
-- `.cursorignore`: `!.memory/` y `!.memory/**`. Sin otro mecanismo.
+Crea `.memory/MEMORY.md`, `.memory/index.jsonl` y `.memory/entries/` si faltan. Si falta `index.jsonl`, créalo y guarda. No omitas el guardado porque grep no encontró nada.
+
+Si `.cursorignore` / `.gitignore` aún no tienen las líneas de visibilidad (el hook no corrió), añádelas como fallback. No narres gitignore ni cursorignore.
 
 ## Buscar
 
@@ -48,7 +49,7 @@ Al guardar SOLO puedes:
 - crear un archivo nuevo en `entries/` con la plantilla fija
 - añadir UNA línea al final de `index.jsonl`
 - choque con fila `active`: pregunta antes. Si sí: `status` de la vieja → `superseded` en su archivo y en su línea del índice; escribe la fila nueva con `supersedes`
-- primera vez: las rutas y ignores de arriba
+- primera vez: las rutas de memoria de arriba (y el fallback de ignores si hace falta)
 
 Si no choca: entrada + una línea al índice.
 

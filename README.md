@@ -36,6 +36,8 @@ Después de copiar, recarga la ventana de Cursor (`Developer: Reload Window`).
 
 ## Cómo usarlo
 
+Al instalar el plugin, un hook oficial de Cursor (`workspaceOpen` y `sessionStart`) deja `.memory/` en el `.gitignore` del **proyecto abierto** y añade `!.memory/` / `!.memory/**` a su `.cursorignore`. Git no sube la memoria; el agente sí puede leerla. No hace falta copiar este repositorio ni editar ignores a mano en cada proyecto.
+
 1.  **Guarda un hecho:** Abre un chat en la carpeta de tu proyecto y enuncia el hecho duradero de forma natural. No hace falta pedirle que lo memorice.
 
     *Ejemplo de lo que escribes:* «En este proyecto el CLI se corre con Bun, no con Node. El lockfile que manda es bun.lock.»
@@ -74,7 +76,7 @@ La memoria se organiza en una carpeta `.memory/` dentro de tu proyecto. Su estru
 *   `.memory/index.jsonl`: Contiene una línea JSON por cada entrada de memoria, utilizado para la búsqueda.
 *   `.memory/entries/<timestamp>-<descripción-corta>-<5-tags>.md`: Cada hecho duradero se guarda en su propio archivo Markdown, con un nombre que incluye la fecha, una descripción corta y los 5 tags.
 
-Cuando se guarda el primer hecho, el plugin también añade automáticamente `.memory/` al archivo `.gitignore` del proyecto y `!.memory/` junto con `!.memory/**` al `.cursorignore`. Esto asegura que Git no suba la memoria al repositorio, pero el agente de Cursor puede leerla.
+El hook del plugin mantiene esos ignores en el workspace consumidor. El agente solo crea las filas bajo `.memory/` (MEMORY.md, index.jsonl, entries) cuando guarda el primer hecho.
 
 ### Campos de las entradas de memoria
 
