@@ -1,0 +1,17 @@
+{
+  "name": "memorizer",
+  "owner": {
+    "name": "dguzmano96"
+  },
+  "metadata": {
+    "description": "Memoria local del workspace en .memory/ para hechos duraderos del agente.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "memorizer",
+      "source": ".",
+      "description": "Memoria local del workspace en .memory/ para hechos duraderos del agente."
+    }
+  ]
+}

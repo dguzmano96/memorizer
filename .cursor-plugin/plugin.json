@@ -1,0 +1,7 @@
+{
+  "name": "memorizer",
+  "displayName": "Memorizer",
+  "description": "Memoria local del workspace en .memory/ para hechos duraderos del agente.",
+  "version": "0.1.0",
+  "license": "MIT"
+}

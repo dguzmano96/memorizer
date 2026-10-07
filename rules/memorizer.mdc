@@ -1,0 +1,77 @@
+---
+description: Memoria local del workspace (.memory/): buscar, guardar y superseder hechos duraderos.
+alwaysApply: true
+---
+
+# Memorizer
+
+Solo el workspace abierto. Carpeta `.memory/`. No global. No compartir en equipo. No tocar reglas Scrum ni scrum-dev-agents.
+
+No leas `MEMORY.md` cada turno (es para humanos). Grep el índice; no lo inyectes. Sin tope de tamaño.
+
+## Primera vez (si falta algo)
+
+- `.memory/entries/`
+- `.memory/index.jsonl` (vacío ok)
+- `.memory/MEMORY.md` una vez: ficha humana breve, mismos campos, en español
+- `.gitignore`: línea `.memory/`
+- `.cursorignore`: negación `!.memory/` (y `!.memory/**` si una línea no basta). Sin otro mecanismo.
+
+## Buscar
+
+1. Grep `index.jsonl` por los 5 `tags` y `status` `active`.
+2. Si hay filas: abre esos `path`.
+3. Si cero activas: Grep `lowtags`. Relacionado, no exacto. Abre el archivo solo si `summary` encaja. No mezcles lowtags si ya hubo hits de tags.
+
+## Guardar (hecho duradero)
+
+Escribe solo si no se deriva de git/código, no es log de chat, no es plan de tarea, no es secreto (solo nombres de env).
+
+Si choca con una fila `active`: pregunta antes. Si sí: marca la vieja `superseded` (archivo + índice), escribe la nueva con `supersedes`, actualiza el índice, luego el mensaje.
+
+Si no choca: escribe la entrada, append una línea al índice, una línea al usuario:
+
+`Memoria guardada: <title>`
+
+Cualquier chat puede escribir, incluido un subagente. El subagente informa al orquestador `path` + `summary`.
+
+Si pasaría de ~500 tokens (cuerpo ~400): parte en otra fila.
+
+## Rutas
+
+`.memory/entries/<timestamp>-<descripcion-corta>-<tag>-<tag>-<tag>-<tag>-<tag>.md`
+
+Los 5 tags del nombre son los primarios (no lowtags).
+
+## Índice (una JSON por línea)
+
+`path`, `tags`, `lowtags`, `type`, `status`, `updated`, `summary`
+
+Nunca `description` en el índice.
+
+## Frontmatter
+
+`created`, `updated` (ISO-8601 UTC), `title`, `type` (`user` | `feedback` | `project` | `reference`), `tags` (exactamente 5, una palabra), `lowtags` (exactamente 3, más amplios), `status` (`active` | `superseded` | `archived`), `summary` (una frase), opcional `supersedes` (path relativo de la fila que reemplaza).
+
+Cuerpo: sección `description` (hecho, cuándo aplica, excepción, cómo comprobar).
+
+## Ejemplo
+
+```
+---
+created: 2026-10-07T05:12:00Z
+updated: 2026-10-07T05:12:00Z
+title: Runtime Bun
+type: project
+tags: [bun, runtime, cli, prefer, stack]
+lowtags: [herramientas, js, build]
+status: active
+summary: El CLI del producto se ejecuta con Bun, no con Node.
+---
+
+## description
+
+Usar Bun para scripts y CLI. Excepción: herramientas que exijan Node. Comprobar: scripts del repo.
+```
+
+Índice: `{"path":".memory/entries/20261007T051200Z-runtime-bun-bun-runtime-cli-prefer-stack.md","tags":["bun","runtime","cli","prefer","stack"],"lowtags":["herramientas","js","build"],"type":"project","status":"active","updated":"2026-10-07T05:12:00Z","summary":"El CLI del producto se ejecuta con Bun, no con Node."}`
