@@ -9,13 +9,29 @@ Solo el workspace abierto. Carpeta `.memory/`. No global. No compartir en equipo
 
 No leas `MEMORY.md` cada turno (es para humanos). Grep el índice; no lo inyectes. Sin tope de tamaño.
 
-## Primera vez (si falta algo)
+## Alcance de escritura
 
-- `.memory/entries/`
-- `.memory/index.jsonl` (vacío ok)
-- `.memory/MEMORY.md` una vez: ficha humana breve, mismos campos, en español
+El agente puede crear o editar SOLO:
+
+- archivos bajo `.memory/`
+- una línea `.memory/` en el `.gitignore` del workspace
+- la excepción `!.memory/` y `!.memory/**` en el `.cursorignore` del workspace
+
+## Estructura intocable
+
+No crear otras carpetas. No renombrar. No mover.
+
+- `.memory/MEMORY.md` — ficha humana; se crea una vez; no se reescribe en cada guardado
+- `.memory/index.jsonl` — solo líneas JSON, una por fila
+- `.memory/entries/<timestamp>-<desc>-<tag>-<tag>-<tag>-<tag>-<tag>.md`
+
+Los 5 tags del nombre son exactamente los 5 `tags` del frontmatter, mismo orden, una palabra cada uno.
+
+## Primera vez (si falta algo; no es opcional)
+
+- esas tres rutas (entries/, index.jsonl vacío ok, MEMORY.md una vez)
 - `.gitignore`: línea `.memory/`
-- `.cursorignore`: negación `!.memory/` (y `!.memory/**` si una línea no basta). Sin otro mecanismo.
+- `.cursorignore`: `!.memory/` y `!.memory/**`. Sin otro mecanismo.
 
 ## Buscar
 
@@ -27,9 +43,14 @@ No leas `MEMORY.md` cada turno (es para humanos). Grep el índice; no lo inyecte
 
 Escribe solo si no se deriva de git/código, no es log de chat, no es plan de tarea, no es secreto (solo nombres de env).
 
-Si choca con una fila `active`: pregunta antes. Si sí: marca la vieja `superseded` (archivo + índice), escribe la nueva con `supersedes`, actualiza el índice, luego el mensaje.
+Al guardar SOLO puedes:
 
-Si no choca: escribe la entrada, append una línea al índice, una línea al usuario:
+- crear un archivo nuevo en `entries/` con la plantilla fija
+- añadir UNA línea al final de `index.jsonl`
+- choque con fila `active`: pregunta antes. Si sí: `status` de la vieja → `superseded` en su archivo y en su línea del índice; escribe la fila nueva con `supersedes`
+- primera vez: las rutas y ignores de arriba
+
+Si no choca: entrada + una línea al índice + al usuario:
 
 `Memoria guardada: <title>`
 
@@ -37,21 +58,21 @@ Cualquier chat puede escribir, incluido un subagente. El subagente informa al or
 
 Si pasaría de ~500 tokens (cuerpo ~400): parte en otra fila.
 
-## Rutas
+## Prohibido (aunque parezca útil)
 
-`.memory/entries/<timestamp>-<descripcion-corta>-<tag>-<tag>-<tag>-<tag>-<tag>.md`
+- crear o editar reglas (`rules/`, `.cursor/rules/`, cualquier `*.mdc` fuera de `.memory/`)
+- editar README, plugin.json, marketplace.json, AGENTS.md o código del plugin
+- inventar, borrar o renombrar campos; meter `description` en el índice
+- reescribir `index.jsonl` entero, ordenarlo, pretty-print, o más de un JSON por línea
+- borrar entries, vaciar la carpeta, compactar o limpiar (esos comandos aún no existen)
+- guardar el hecho como regla alwaysApply
+- tags del nombre distintos de los 5 `tags` del frontmatter (mismo orden)
 
-Los 5 tags del nombre son los primarios (no lowtags).
+## Campos fijos (no improvisar)
 
-## Índice (una JSON por línea)
+Frontmatter: `created`, `updated` (ISO-8601 UTC), `title`, `type` (`user` | `feedback` | `project` | `reference`), `tags` (5), `lowtags` (3, más amplios), `status` (`active` | `superseded` | `archived`), `summary` (una frase), `supersedes` opcional (path relativo de la fila que reemplaza).
 
-`path`, `tags`, `lowtags`, `type`, `status`, `updated`, `summary`
-
-Nunca `description` en el índice.
-
-## Frontmatter
-
-`created`, `updated` (ISO-8601 UTC), `title`, `type` (`user` | `feedback` | `project` | `reference`), `tags` (exactamente 5, una palabra), `lowtags` (exactamente 3, más amplios), `status` (`active` | `superseded` | `archived`), `summary` (una frase), opcional `supersedes` (path relativo de la fila que reemplaza).
+Índice (una JSON por línea): `path`, `tags`, `lowtags`, `type`, `status`, `updated`, `summary`. Nunca `description`.
 
 Cuerpo: sección `description` (hecho, cuándo aplica, excepción, cómo comprobar).
 
